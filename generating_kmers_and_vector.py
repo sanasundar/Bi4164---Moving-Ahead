@@ -59,7 +59,7 @@ def make_kmers(sequence, kmer_size):
     kmers = []
     number_of_kmers = len(sequence) + 1 - kmer_size
     for i in range (0, number_of_kmers):
-        kmer = sequence[i: 1+kmer_size]
+        kmer = sequence[i: i+kmer_size]
         kmers.append(kmer)
     return kmers
 
@@ -98,10 +98,10 @@ def define_vector(kmer_from_sequence, possible_kmers):
     
     vector = np.zeros(len(possible_kmers))
     for i in range(0, len(kmer_from_sequence)):
-        if kmer_from_sequence[i] in possible_kmers:
-            index = possible_kmers.index(kmer_from_sequence[i])
-            vector[index] += 1
+        index = possible_kmers.index(kmer_from_sequence[i])
+        vector[index] += 1
     normalised_vector = vector/len(kmer_from_sequence)
+    print('normalised vector generated!')
     return normalised_vector
 
 def get_vectors_for_all_sequences(sequences_list, kmer_size):
@@ -113,7 +113,8 @@ def get_vectors_for_all_sequences(sequences_list, kmer_size):
     print('kmers have been made and normalised vectors have been acquired!')
     return normalised_vectors
         
-kmer_size = 6
+kmer_size = 2
 sequences, ids = read_fasta(fasta_sequences_neg, fasta_sequences_pos)
+print(len(sequences))
 normalised_vectors_for_all_data = get_vectors_for_all_sequences(sequences, kmer_size)
 print(normalised_vectors_for_all_data)
