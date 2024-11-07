@@ -4,8 +4,12 @@ import os
 import numpy as np
 import pandas as pd
 import pickle
+from collections import Counter
+from textwrap import wrap
+from sklearn.feature_extraction import DictVectorizer
 
-dir_data = r"C:\Users\Saranya Sundar\OneDrive\Desktop\Python\IISER Pune Assignments\Bi4164\\"
+dir_data=os.getcwd()+"\\data_set"
+
 
 os.chdir(dir_data)
 fasta_sequences_neg = SeqIO.parse(open("negative.fa"), 'fasta')
@@ -56,12 +60,12 @@ def make_kmers(sequence, kmer_size):
         kmers: list
             The list of kmers for the sequence'''
 
-    kmers = []
-    number_of_kmers = len(sequence) + 1 - kmer_size
-    for i in range (0, number_of_kmers):
-        kmer = sequence[i: 1+kmer_size]
-        kmers.append(kmer)
-    return kmers
+    output= []
+    for i in range(kmer_size):
+        output+=wrap(sequence[i:], width=kmer_size)
+    output= [i for i in output if len(i)==kmer_size]
+    dict_output= Counter(output)
+    return output, dict_output
 
 def possible_kmers(kmer_size):
     '''Returns all possible combinations of the four letter nucleotide for a particular window size
@@ -105,15 +109,21 @@ def define_vector(kmer_from_sequence, possible_kmers):
     return normalised_vector
 
 def get_vectors_for_all_sequences(sequences_list, kmer_size):
-    normalised_vectors = []
-    kmers_possible_for_kmer_size = possible_kmers(kmer_size)
+    D = []
+    v = DictVectorizer()
     for i in range(0, len(sequences_list)):
-        kmers_for_sequence = make_kmers(sequences_list[i], kmer_size)
-        normalised_vectors.append(define_vector(kmers_for_sequence, kmers_possible_for_kmer_size))
+        kmers_for_sequence = dict(make_kmers(sequences[i], kmer_size)[1])
+        D.append(kmers_for_sequence)
     print('kmers have been made and normalised vectors have been acquired!')
-    return normalised_vectors
+    X = v.fit_transform(D)
+    return X, v
         
 kmer_size = 6
 sequences, ids = read_fasta(fasta_sequences_neg, fasta_sequences_pos)
-normalised_vectors_for_all_data = get_vectors_for_all_sequences(sequences, kmer_size)
-print(normalised_vectors_for_all_data)
+# normalised_vectors_for_all_data = get_vectors_for_all_sequences(sequences, kmer_size)
+# print(normalised_vectors_for_all_data[0])
+# print(sequences[0])
+# print(dict(make_kmers(sequences[0], kmer_size)[1]))
+print(get_vectors_for_all_sequences(sequences, kmer_size))
+
+
