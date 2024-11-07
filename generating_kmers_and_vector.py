@@ -97,10 +97,10 @@ def define_vector(kmer_from_sequence, possible_kmers):
             An array of counts of each kmer occuring in the sequence and normalised to the number of kmers in the sequence to be as little biased to size of sequence as possible'''
     
     vector = np.zeros(len(possible_kmers))
-    for i in range(0, len(possible_kmers)):
-        for j in range(0, len(kmer_from_sequence)):
-            if kmer_from_sequence[j] in possible_kmers:
-                vector[i] += 1
+    for i in range(0, len(kmer_from_sequence)):
+        if kmer_from_sequence[i] in possible_kmers:
+            index = possible_kmers.index(kmer_from_sequence[i])
+            vector[index] += 1
     normalised_vector = vector/len(kmer_from_sequence)
     return normalised_vector
 
